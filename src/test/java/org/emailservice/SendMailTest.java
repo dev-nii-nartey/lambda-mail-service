@@ -14,21 +14,23 @@ import java.util.Map;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 
-public class SendMailTest {
+class SendMailTest {
 
     private SendMail sendMail;
     
     @Mock
     private Context context;
+    
+    private Gson gson = new Gson();
 
     @BeforeEach
-    public void setUp() {
+    void setUp() {
         MockitoAnnotations.openMocks(this);
         sendMail = new SendMail();
     }
 
     @Test
-    public void testMissingRequestBody() {
+    void shouldReturnErrorWhenRequestBodyIsNull() {
         // Arrange
         APIGatewayProxyRequestEvent request = new APIGatewayProxyRequestEvent();
         request.setBody(null);
@@ -42,14 +44,26 @@ public class SendMailTest {
     }
 
     @Test
-    public void testMissingRequiredFields() {
+    void shouldReturnErrorWhenAllRequiredFieldsAreMissing() {
+        // Arrange
+        APIGatewayProxyRequestEvent request = new APIGatewayProxyRequestEvent();
+        Map<String, String> emptyData = new HashMap<>();
+        request.setBody(gson.toJson(emptyData));
+
+        // Act
+        APIGatewayProxyResponseEvent response = sendMail.handleRequest(request, context);
+
+        // Assert
+        assertEquals(400, response.getStatusCode());
+        assertEquals("{\"error\": \"Name, Email and Message are all required\"}", response.getBody());
+    }
+
+    @Test
+    void shouldReturnErrorWhenEmailAndMessageAreMissing() {
         // Arrange
         APIGatewayProxyRequestEvent request = new APIGatewayProxyRequestEvent();
         Map<String, String> incompleteData = new HashMap<>();
         incompleteData.put("name", "Test User");
-        // Missing email and message
-        
-        Gson gson = new Gson();
         request.setBody(gson.toJson(incompleteData));
 
         // Act
@@ -57,6 +71,22 @@ public class SendMailTest {
 
         // Assert
         assertEquals(400, response.getStatusCode());
-        assertEquals("{\"error\": \"Name , Email and Message are all required \"}", response.getBody());
+        assertEquals("{\"error\": \"Name, Email and Message are all required\"}", response.getBody());
+    }
+
+    @Test
+    void shouldReturnErrorWhenNameAndMessageAreMissing() {
+        // Arrange
+        APIGatewayProxyRequestEvent request = new APIGatewayProxyRequestEvent();
+        Map<String, String> incompleteData = new HashMap<>();
+        incompleteData.put("email", "test@example.com");
+        request.setBody(gson.toJson(incompleteData));
+
+        // Act
+        APIGatewayProxyResponseEvent response = sendMail.handleRequest(request, context);
+
+        // Assert
+        assertEquals(400, response.getStatusCode());
+        assertEquals("{\"error\": \"Name, Email and Message are all required\"}", response.getBody());
     }
 } 
