@@ -83,3 +83,16 @@ The following environment variables should be set in the Lambda function configu
 ## License
 
 MIT 
+
+## Easy to Deploy and Run
+
+This Lambda function is designed for simplicity and ease of use:
+
+- **Minimal Configuration**: Only two environment variables needed
+- **Single JAR Deployment**: One-click upload to AWS Lambda
+- **Zero Maintenance**: Serverless architecture means no servers to manage
+- **Cost Effective**: Pay only for what you use (typically pennies per month for low volume)
+- **Quick Setup**: Can be deployed in under 5 minutes
+- **Scalable**: Automatically handles traffic spikes without configuration
+
+Perfect for websites and applications needing a simple contact form backend with email notifications. 
